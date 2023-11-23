@@ -5,6 +5,8 @@ namespace FbxSharp
 {
     public class Parser
     {
+        public bool AutoExpandArray { get; set; } = false;
+        
         public Parser(Tokenizer tokenizer)
         {
             if (tokenizer == null) throw new ArgumentNullException("tokenizer");
@@ -253,8 +255,16 @@ namespace FbxSharp
                     }
                     if (subobjects[0].Values.Count != count)
                     {
-                        throw new ParseException(
-                            string.Format("Array size mismatch. Expected {0} but got {1}.", count, subobjects[0].Values.Count));
+                        if (!AutoExpandArray)
+                        {
+                            throw new ParseException(
+                                string.Format("Array size mismatch. Expected {0} but got {1}.", count,
+                                    subobjects[0].Values.Count));
+                        }
+                        else
+                        {
+                            count = subobjects[0].Values.Count;
+                        }
                     }
                     state = ArrayState.End;
                     break;
